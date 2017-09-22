@@ -1,0 +1,34 @@
+# -*- coding: UTF-8 -*-
+from numpy import *
+import operator
+from os import listdir
+from sys import argv
+import os
+from KNN import createDataSet,img2vector,classify0,handwritingClassTest
+script,from_file=argv
+
+call="python imgToAsc.py "+from_file+" -o "+"buf.txt"
+#print call
+os.system(call)
+
+# 样本数据的类标签列表
+hwLabels = []
+# 样本数据文件列表
+trainingFileList = listdir('digits/trainingDigits')
+m = len(trainingFileList)
+# 初始化样本数据矩阵（M*1024）
+trainingMat = zeros((m,1024))
+# 依次读取所有样本数据到数据矩阵
+for i in range(m):
+    # 提取文件名中的数字
+    fileNameStr = trainingFileList[i]
+    fileStr = fileNameStr.split('.')[0]
+    classNumStr = int(fileStr.split('_')[0])
+    hwLabels.append(classNumStr)
+    # 将样本数据存入矩阵
+    trainingMat[i,:] = img2vector('digits/trainingDigits/%s' % fileNameStr)
+
+vectorUnderTest = img2vector("buf.txt")
+classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 5)
+print 'the digit in this picture is %d '%classifierResult
+os.system("rm buf.txt")
